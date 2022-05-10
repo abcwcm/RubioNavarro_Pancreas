@@ -1,0 +1,5 @@
+qc.data.dir	sample.ID	group.ID	Cd63	replicate	batch
+High-1	High-1	Cd63.high	high	1	1
+High-2	High-2	Cd63.high	high	2	2
+Low-2	Low-2	Cd63.low	low	2	2
+Low-3	Low-3	Cd63.low	low	3	3

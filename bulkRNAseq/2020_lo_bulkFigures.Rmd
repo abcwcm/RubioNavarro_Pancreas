@@ -1,0 +1,251 @@
+---
+title: Identification of a beta cell subset with enhanced insulin secretion and glucose metabolism reduced in type 2 diabetes
+subtitle: 
+output:
+  html_document:
+    code_folding: hide
+    theme: space
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+  BiocStyle::html_document2:
+    code_folding: hide
+    toc: yes
+    toc_float: yes
+  knitrBootstrap::bootstrap_document:
+    highlight.chooser: yes
+    theme.chooser: yes
+  pdf_document:
+    toc: yes
+always_allow_html: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, bootstrap.show.code = FALSE, results='hide', bootstrap.show.message=FALSE, warning=FALSE, cache=TRUE, echo=FALSE}
+knitr::opts_chunk$set(bootstrap.show.code = FALSE, message=FALSE, warning=FALSE)
+suppressMessages(library(reshape2))
+suppressMessages(library(RColorBrewer))
+suppressMessages(library(ggplot2))
+suppressMessages(library(tidyr))
+suppressMessages(library(plyr))
+suppressMessages(library(kableExtra))
+suppressMessages(library(magrittr))
+suppressMessages(library(gtools))
+suppressMessages(library(plotly))
+suppressMessages(library(gage))
+suppressMessages(library(pathview))
+suppressMessages(library(DESeq2))
+suppressMessages(library(edgeR))
+suppressMessages(library(limma))
+suppressMessages(library(genefilter))
+suppressMessages(library(pheatmap))
+suppressMessages(library(gplots))
+suppressMessages(library(treemap))
+suppressMessages(library(scales))
+suppressMessages(library(Hmisc))
+suppressMessages(library(knitr))
+suppressMessages(library(annotate))
+suppressMessages(library(data.table))
+suppressMessages(library(openxlsx))
+suppressMessages(library(ggrepel))
+suppressMessages(library(scran))
+suppressMessages(library(muscat))
+```
+
+
+
+
+```{r counts, message=FALSE, warning=FALSE, cache=TRUE, echo=FALSE, context="data"}
+counts <- read.table(file = "gene.counts.txt", header = TRUE, check.names=FALSE, row.names=1)
+decoderFile <- "decoder.txt"
+decoder.data <- read.table(decoderFile,header=T,stringsAsFactors=F,sep="\t")
+decoder.data$condition <- factor(decoder.data$group.ID)
+decoder.data$group.ID <-factor(decoder.data$group.ID)
+decoder.data$batch <-factor(decoder.data$batch)
+decoder.data$replicate <-factor(decoder.data$replicate)
+decoder.data <- decoder.data[decoder.data$sample.ID %in% colnames(counts),]
+counts <- counts[,c(decoder.data$sample.ID)]
+table(colnames(counts) == decoder.data$sample.ID)
+```
+
+# Samples
+
+The following samples were part of this analysis:
+
+```{r samples, message=FALSE, warning=FALSE, cache=TRUE, echo=FALSE, context="data"}
+ kable(decoder.data[,c(2,3,4)], row.names=FALSE,  padding = 0, longtable=TRUE) %>%  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
+```
+
+# Differential expression analysis
+
+```{r runDESeq2, message=FALSE, eval=TRUE, warning=FALSE, cache=TRUE, echo=FALSE, results='hide'}
+sampleConditions <- factor(make.names(decoder.data$group.ID)) 	
+deseq2.coldata <- data.frame(condition = sampleConditions, row.names = colnames(counts))
+deseq2.coldata$condition <- factor(deseq2.coldata$condition, levels=c("Cd63.low","Cd63.high"))
+deseq2.dds <- DESeq2::DESeqDataSetFromMatrix(countData = counts, colData = deseq2.coldata, design = ~ condition)
+keep <- rowSums(counts(deseq2.dds)) >= 10
+deseq2.dds <- deseq2.dds[keep,]
+deseq2.dds <- DESeq(deseq2.dds)
+
+deseq2.res <- results(deseq2.dds, contrast=c("condition","Cd63.high","Cd63.low"), alpha=0.05)
+deseq2.res.sig <- as.data.frame(subset(deseq2.res , padj < 0.05))
+deseq2_high_vs_low <- deseq2.res.sig
+deseq2_high_vs_low_all <- as.data.frame(deseq2.res)
+```
+
+
+The following genes were detected as differentially expressed:
+
+```{r  dge_table, message=FALSE, warning=FALSE, cache=TRUE, echo=FALSE, eval=T}
+df_deg <- data.frame(
+    "padj < 0.05" = c(nrow(deseq2_high_vs_low)),
+    check.names = F,
+    stringsAsFactors = F)
+row.names(df_deg) <- c("Cd63.high vs. Cd63.low")
+
+kable(df_deg, row.names = T)  %>%  kable_styling(
+  bootstrap_options = c("striped", "hover", "condensed"),
+  full_width = F)
+```
+
+
+
+# Figure 2C
+
+c, Heatmap of glycolysis, TCA cycle, and mitochondrial genes from FACS-sorted CD63hi and CD63lo β cells obtained through bulk RNA-Seq (N = 2 per group)
+
+```{r heatmap_glyc, message=FALSE, warning=FALSE, cache=TRUE, echo=FALSE,  fig.width=8.3, fig.height=8}
+goi <- c("Gapdh","Atp5h", "Cox4i1","Cox5a", "Cox5b", "Atp5o","Ndufc2","Ndufb8",
+  "Atp5l","Aldoa","Ndufb6", "Ndufb4", "Mdh2","Ndufb9","Ndufs7","Ndufa8","Ndufb10",
+  "Ndufab1","Atp5c1","Ndufb7", "Ndufa4","Ndufb5","Atp5j","Ndufs3","Ndufs8")
+
+pm_ordered = pheatmap(edgeR::cpm(counts, log=T)[goi,], scale="row", show_rownames=T, cellwidth = 25, cellheight=15, fontsize_row = 12, cluster_cols = T, main="ATP synthesis & Glycolysis genes\n", border_color = NA,treeheight_row=35, treeheight_col=25, silent = T)
+goi_ordered = c(row.names(edgeR::cpm(counts, log=T)[goi,][pm_ordered$tree_row$order,]), "Cd63")
+
+pheatmap(edgeR::cpm(counts, log=T)[goi_ordered,], scale="row", show_rownames=T, cellwidth = 25, cellheight=15, fontsize_row = 12, cluster_cols = T, main="ATP synthesis & Glycolysis genes\n", treeheight_row=35, treeheight_col=25, cluster_rows = F)
+
+```
+
+
+
+# Figure 2d
+
+d, PCA scatter plot comparing the transcriptomes of FACS-sorted CD63hi and CD63lo β cells obtained through bulk RNA-Seq to β cell Clusters 0, 1, 2 and 3 obtained by scRNA-Seq.
+
+```{r read_in_sce_agg_by_cls, message=FALSE, eval=TRUE, warning=FALSE, cache=TRUE, echo=FALSE}
+sce <- readRDS("sce_integratedData_betaCells_HFD_WT_2019-09.rds")
+
+# bulk is WT only, so focus on WT in scRNA
+sce <- sce[,sce$Sample == "WT"]
+
+sce_filt_byByDrop =  sce[rowData(sce)$pct_dropout_by_counts <= 90,]
+
+# aggregate counts
+pseduo_bulk = aggregateData(sce_filt_byByDrop,by=c("clusts0.2")) %>% assay()
+
+# merge aggregate counts with bulk
+merged_with_bulk <- merge(pseduo_bulk, counts, by="row.names")
+row.names(merged_with_bulk) <- merged_with_bulk$Row.names
+merged_with_bulk <- merged_with_bulk[,-1]
+```
+
+```{r pca_fig2d, message=FALSE, eval=TRUE, warning=FALSE, cache=TRUE, echo=FALSE}
+deseq2.coldata <- data.frame(sample=colnames(merged_with_bulk), group=factor(c(paste0("clst.",colnames(pseduo_bulk)), "Cd63.high", "Cd63.high", "Cd63.low", "Cd63.low")), row.names = colnames(merged_with_bulk), assay=factor(c(rep("scRNA", ncol(pseduo_bulk)), "bulk", "bulk", "bulk", "bulk")), group2 = factor(c("Cd63.low", "Cd63.high", "Cd63.low", "Cd63.med" , "Cd63.high", "Cd63.high", "Cd63.low", "Cd63.low")), stringsAsFactors=F)
+deseq2.coldata$assay <- factor(deseq2.coldata$assay)
+deseq2.coldata$group <- factor(deseq2.coldata$group)
+deseq2.cds <- DESeq2::DESeqDataSetFromMatrix(countData = merged_with_bulk,colData = deseq2.coldata, design = ~group)
+deseq2.cds <- estimateSizeFactors(deseq2.cds)
+deseq2.vst <- DESeq2::vst(deseq2.cds, blind=TRUE)
+deseq2.vst$Cd63  = assay(DESeq2::vst(deseq2.cds, blind=TRUE))["Cd63",]
+
+noAssayEffect <- removeBatchEffect(edgeR::cpm(as.matrix(merged_with_bulk), log=T), batch=deseq2.coldata$assay)
+assay(deseq2.vst) <- noAssayEffect
+
+data <- plotPCA(deseq2.vst, intgroup=c("group", "assay" ,"Cd63"), returnData=TRUE, ntop=500)
+percentVar <- round(100 * attr(data, "percentVar"))
+
+ggplot(data, aes(PC1, PC2, color=Cd63, shape=assay, label=name)) +
+  geom_point(size=4) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+  theme_bw() + theme(legend.position="bottom") +
+  ggtitle("PC1 vs. PC2, top 500 most variable genes") + 
+  geom_label_repel(show.legend = F) + 
+  guides(color=NULL) + guides(colour=guide_colourbar(barwidth=10,label.position="bottom")) + 
+  scale_color_viridis_c(option = "A", begin=0, end=0.9)
+
+```
+
+
+
+# Ext. Figure 4a
+
+a, PCA scatter plot comparing the transcriptomes of FACS-sorted CD63hi and CD63lo β cells obtained through bulk RNA-Seq to scRNA-Seq analyses of CD63hi, CD63med, and CD63lo β cells. 
+
+```{r read_in_sce_agg_by_cond, message=FALSE, eval=TRUE, warning=FALSE, cache=TRUE, echo=FALSE}
+sce <- readRDS("sce_integratedData_betaCells_HFD_WT_2019-09.rds")
+
+# bulk is WT only, so focus on WT in scRNA
+sce <- sce[,sce$Sample == "WT"]
+
+sce_filt_byByDrop =  sce[rowData(sce)$pct_dropout_by_counts <= 90,]
+
+# aggregate counts
+pseduo_bulk = aggregateData(sce_filt_byByDrop,by=c("Cd63.status")) %>% assay()
+
+# merge aggregate counts with bulk
+merged_with_bulk <- merge(pseduo_bulk, counts, by="row.names")
+row.names(merged_with_bulk) <- merged_with_bulk$Row.names
+merged_with_bulk <- merged_with_bulk[,-1]
+```
+
+```{r pca_ext_fig_4a, message=FALSE, eval=TRUE, warning=FALSE, cache=TRUE, echo=FALSE}
+deseq2.coldata <- data.frame(sample=colnames(merged_with_bulk), group=c("Cd63.high", "Cd63.low", "Cd63.med", "Cd63.high", "Cd63.high", "Cd63.low", "Cd63.low"), row.names = colnames(merged_with_bulk), assay=c("scRNA", "scRNA", "scRNA", "bulk", "bulk", "bulk", "bulk"), stringsAsFactors=F)
+deseq2.coldata$assay <- factor(deseq2.coldata$assay)
+deseq2.coldata$group <- factor(deseq2.coldata$group)
+deseq2.cds <- DESeq2::DESeqDataSetFromMatrix(countData = merged_with_bulk,colData = deseq2.coldata, design = ~group)
+deseq2.cds <- estimateSizeFactors(deseq2.cds)
+deseq2.vst <- DESeq2::vst(deseq2.cds, blind=TRUE)
+
+design =  model.matrix(~group,data=deseq2.coldata)
+noAssayEffect <- removeBatchEffect(edgeR::cpm(as.matrix(merged_with_bulk), log=T), batch=deseq2.coldata$assay, design=design)
+assay(deseq2.vst) <- noAssayEffect
+
+data <- plotPCA(deseq2.vst, intgroup=c("group", "assay"), returnData=TRUE, ntop=500)
+percentVar <- round(100 * attr(data, "percentVar"))
+
+ggplot(data, aes(PC1, PC2, color=group.1, shape=assay, label=name)) +
+  geom_point(size=4) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+  theme_bw() + theme(legend.position="bottom") +
+  ggtitle("PC1 vs. PC2, top 500 most variable genes") + 
+  geom_label_repel(show.legend = F) + 
+  guides(color=guide_legend(nrow=1))
+
+```
+
+
+
+# Ext. Figure 4c
+
+c, Heatmap of 339 differentially expressed genes from FACS-sorted CD63hi and CD63lo β cells obtained through bulk RNA-Seq
+
+
+```{r heatmap_DEGs_after_removing_macrophageDEGs, message=FALSE, eval=TRUE, warning=FALSE, cache=TRUE, echo=FALSE, results='hide', fig.width=8.3, fig.height=8}
+goi = read.xlsx("DEG genes after mac removal RNA-seq.xlsx", colNames = F)
+colnames(goi) = "gene"
+#table(goi$X1 %in% row.names(deseq2_high_vs_low))
+
+pheatmap(edgeR::cpm(counts, log=T)[goi$gene,], scale="row", show_rownames=F, cellwidth = 25, fontsize_row = 7, cluster_cols = T, main="DEGs after excluding macrophage DEs\n", border_color = NA, treeheight_row=35, treeheight_col=25)
+
+```
+
+
+
+
+# Session Info
+```{r session, message=FALSE, warning=FALSE, cache=TRUE,comment="",echo=FALSE, fig.width=10, fig.height=5.5, context="data"}
+sessionInfo()
+```
