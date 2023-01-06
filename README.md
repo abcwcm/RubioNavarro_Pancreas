@@ -2,12 +2,10 @@
 
 Scripts related to single-cell and bulk RNA-seq data of mouse pancreata as presented by Rubio-Navarro et al.
 
+>Alfonso Rubio-Navarro; Nicolás Gómez-Banoy; Lisa Stoll; Friederike Dündar; Lunkun Ma; Alex M Mawla; Nathalia Montoya-Oviedo; Paul Zumbo; Moritz Reiterer; Norihiro Imai; Ankit Gilani; Boris Yang; Eric Cortada; Angie Chi Nok Chong; David E Cohen; Mark O Huising; Shuibing Chen; Doron Betel; Jingli Cao; James C Lo. *Identification of a beta cell subset with enhanced insulin secretion and glucose metabolism reduced in type 2 diabetes.* Nat Cell Biology, 2023.
+
 - **GEO for bulk RNA-seq**: [GSE205023](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE205023)
 - **GEO for single-cell RNA-seq**: [GSE203151](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE203151)
-
-Relevant RDS files referenced in scripts can be found here:
-- [sce_integratedData_HFD_WT_2019-09.rds](https://wcm.box.com/s/woo4m5g39gtox94rh8hhx8ugv6wz39v0)
-- [sce_integratedData_betaCells_HFD_WT_2019-09.rds](https://wcm.box.com/s/ncr8szvwoeu1ip3uxtizwk3vsxzzczc6)
 
 ## Single-cell RNA-seq data generation
 
