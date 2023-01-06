@@ -38,3 +38,8 @@ Transcriptome Data Analysis Sequencing reads were mapped with STAR v2.6.0c with 
 Fragments per gene were counted with `featureCounts` v1.6.2 with respect to Ensembl annotations.
 Differentially expressed genes between pairwise comparisons were identified by Wald tests using `DESeq2` v1.26.0 77 and only Benjamini–Hochberg corrected P-values < 0.05 were considered statistically significant.
 Biological analyses, including canonical pathways, biological processes or transcription factors were performed using the Ingenuity Pathway Analysis tool (Qiagen). Base-2 log-transformed counts per million (CPM) values were used for heatmap plots of bulk RNA-seq data, which were centered and scaled by row. 
+
+![](WCM_MB_LOGO_HZSS1L_CLR_RGB.png)
+
+Data analyses were performed by Paul Zumbo & Friederike Dündar at the [Applied Bioinformatics Core](https://abc.med.cornell.edu/) of Weill Cornell Medicine. 
+Don't hesitate to get in touch, either via issues raised here or via email to abc at med.cornell.edu
