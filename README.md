@@ -26,7 +26,7 @@ We then processed and integrated the different samples using Seurat version 3.1 
 More specifically, read counts were first normalized using `SCTransform` for each sample individually.
 The different samples were then integrated using the top 3,000 most informative genes before performing various dimensionality reduction steps including PCA and UMAP.
 A shared nearest neighbor graph was constructed using Seurat’s `FindNeighbors` function with default settings (e.g. k=20) using the first 20 principal components. Subsequent clustering was performed with Seurat’s `FindClusters` function.
-In order to find major subclusters of  cells that are transcriptionally distinct and not rare (<1% of beta cells), we set the resolution parameter to 0.2.
+In order to find major subclusters of beta cells that are transcriptionally distinct and not rare (<1% of beta cells), we set the resolution parameter to 0.2.
 For visualizations and assessments of normalized expression values, the SCTransform-normalized (log-transformed) expression values were used unless noted otherwise.
 
 To remove putative doublets that may have resulted from the simultaneous capture of cells representing two different cell types within the same GEM, we additionally employed normalized expression thresholds for each of the marker genes and cells that expressed more than one marker gene above the given threshold were removed from the downstream analyses focusing on beta cells.
