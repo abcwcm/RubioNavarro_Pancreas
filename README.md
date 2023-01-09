@@ -10,6 +10,9 @@ Scripts related to single-cell and bulk RNA-seq data of mouse pancreata as prese
     - [sce_integratedData_HFD_WT_2019-09.rds](https://wcm.box.com/s/woo4m5g39gtox94rh8hhx8ugv6wz39v0)
     - [sce_integratedData_betaCells_HFD_WT_2019-09.rds](https://wcm.box.com/s/ncr8szvwoeu1ip3uxtizwk3vsxzzczc6)
 
+The main goal was to identify difference in the transcriptomes of pancreatic beta cells from pre-diabetic mice fed with *regular diet* (=RD) or *high-fat diet* (=HFD).
+To this end, the whole pancreata were digested and subjected to single-cell sequencing; beta cells were identified *in silico* based on marker gene expression patterns and clustering.
+
 ## Single-cell RNA-seq data generation
 
 Pancreatic islets were isolated and cultured overnight in RPMI 1640 supplemented with 10% FBS and penicillin/streptomycin. Then, islets were dissociated with 0.05% Trypsin (Corning) for 10 minutes at 37C. Dissociated cells were passed through a 35 um nylon mesh and resuspended in 1x PBS + 0.05% BSA. Cellular viability was higher than 95% as determined by using Trypan Blue assay and doublets represented less than 5% of total cells. Single cell suspensions were sequenced by the Chromium Single Cell 3’ Reagent Kit v3 (10x Genomics) and 10X Genomics’ Chromium Controller at the Weill Cornell Medicine Genomics Core Facility.
