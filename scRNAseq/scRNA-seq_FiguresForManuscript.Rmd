@@ -251,7 +251,7 @@ ABCutilities::MultiPlotList(pl, cols = 3)
 ### Diffusion map
 
 ```{r}
-datadir <- "/Users/frd2007/Documents/Projects/2018-01_JamesLo/2019-09_excludingDB/data/"
+datadir <- "data/"
 sds.beta <- readRDS(file = paste0(datadir, "slingshotResults_betaCells.rds"))
 ```
 ```{r}
