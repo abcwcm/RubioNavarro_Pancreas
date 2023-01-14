@@ -9,7 +9,7 @@ The main goal was to identify difference in the transcriptomes of pancreatic bet
 
 For the code that was used, see the [.Rmarkdown document](https://github.com/abcwcm/RubioNavarro_Pancreas/blob/903485898ab57be6ba69b59f60bf8a4399e02d93/scRNAseq/scRNA-seq_FiguresForManuscript.Rmd), the resulting figures are part of the [.pdf](https://github.com/abcwcm/RubioNavarro_Pancreas/blob/903485898ab57be6ba69b59f60bf8a4399e02d93/scRNAseq/scRNA-seq_FiguresForManuscript.pdf).
 
-Note that `scABC` is an internal package that was mainly used for generating customizable plots (`plot_reducedDim()`), which nowadays can easily be reproduced with the [`dittoSeq` package](https://github.com/dtm2451/DittoSeq).
+Note that `scABC` is an internal package that was mainly used for generating customizable plots (`plot_reducedDim_from_sce()`), which nowadays can easily be reproduced with the [`dittoSeq` package](https://github.com/dtm2451/DittoSeq).
 
 Don't hesitate to get in touch via the issues here or email directly to abc at med.cornell.edu.
 
