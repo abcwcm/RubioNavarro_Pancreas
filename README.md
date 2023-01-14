@@ -10,6 +10,8 @@ Scripts related to single-cell and bulk RNA-seq data of mouse pancreata as prese
     - [sce_integratedData_HFD_WT_2019-09.rds](https://wcm.box.com/s/woo4m5g39gtox94rh8hhx8ugv6wz39v0)
     - [sce_integratedData_betaCells_HFD_WT_2019-09.rds](https://wcm.box.com/s/ncr8szvwoeu1ip3uxtizwk3vsxzzczc6)
 
+## Setup
+
 The main goal was to identify difference in the transcriptomes of pancreatic beta cells from pre-diabetic mice fed with *regular diet* (=RD) or *high-fat diet* (=HFD).
 To this end, the whole pancreata were digested and subjected to single-cell sequencing; beta cells were identified *in silico* based on marker gene expression patterns and clustering.
 
