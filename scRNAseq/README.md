@@ -3,7 +3,17 @@
     - [sce_integratedData_HFD_WT_2019-09.rds](https://wcm.box.com/s/woo4m5g39gtox94rh8hhx8ugv6wz39v0)
     - [sce_integratedData_betaCells_HFD_WT_2019-09.rds](https://wcm.box.com/s/ncr8szvwoeu1ip3uxtizwk3vsxzzczc6)
 
-The main goal was to identify difference in the transcriptomes of pancreatic beta cells from pre-diabetic mice fed with regular diet (=RD) or high-fat diet (=HFD). To this end, the whole pancreata were digested and subjected to single-cell sequencing; beta cells were identified in silico based on marker gene expression patterns and clustering.
+The main goal was to identify difference in the transcriptomes of pancreatic beta cells from pre-diabetic mice fed with regular diet (=RD) or high-fat diet (=HFD). To this end, the *whole pancreata* were digested and subjected to single-cell sequencing; *beta cells* were subsequently identified *in silico* based on marker gene expression patterns and clustering.
+
+## Methods
+
+For the code that was used, see the [.Rmarkdown document](https://github.com/abcwcm/RubioNavarro_Pancreas/blob/903485898ab57be6ba69b59f60bf8a4399e02d93/scRNAseq/scRNA-seq_FiguresForManuscript.Rmd), the resulting figures are part of the [.pdf](https://github.com/abcwcm/RubioNavarro_Pancreas/blob/903485898ab57be6ba69b59f60bf8a4399e02d93/scRNAseq/scRNA-seq_FiguresForManuscript.pdf).
+
+Note that `scABC` is an internal package that was mainly used for generating customizable plots (`plot_reducedDim()`), which nowadays can easily be reproduced with the [`dittoSeq` package](https://github.com/dtm2451/DittoSeq).
+
+Don't hesitate to get in touch via the issues here or email directly to abc at med.cornell.edu.
+
+----------------------
 
 The raw reads were aligned and processed with the CellRanger pipeline (v. 2.1.0) using the **mouse transcriptome and genome version mm10**. Subsequent analyses were performed in R following the recommendations of Amezquita et al. (https://osca.bioconductor.org/) using numerous functions provided in the R packages scater and scran.
 Based on the calculation of outliers, we removed cells with fewer than 1,000 UMI. In addition, cells with more than 7.5% mitochondrial reads were removed as well as genes that were expressed in fewer than 5 cells of the same sample type.
